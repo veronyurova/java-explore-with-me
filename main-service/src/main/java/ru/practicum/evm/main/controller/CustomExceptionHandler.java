@@ -3,6 +3,7 @@ package ru.practicum.evm.main.controller;
 import lombok.Getter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -12,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 
 import javax.persistence.EntityNotFoundException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
@@ -50,10 +50,9 @@ public class CustomExceptionHandler {
         return new ApiError(null, reason, e.getMessage(), status, LocalDateTime.now());
     }
 
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
-    public ApiError handleSQLException(SQLException e) {
+    public ApiError handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         String reason = "Integrity constraint has been violated";
         String status = String.valueOf(HttpStatus.CONFLICT);
         return new ApiError(null, reason, e.getMessage(), status, LocalDateTime.now());
