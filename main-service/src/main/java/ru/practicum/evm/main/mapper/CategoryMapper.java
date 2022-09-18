@@ -1,8 +1,9 @@
 package ru.practicum.evm.main.mapper;
 
+import ru.practicum.evm.main.model.Category;
 import ru.practicum.evm.main.dto.CategoryDto;
 import ru.practicum.evm.main.dto.NewCategoryDto;
-import ru.practicum.evm.main.model.Category;
+
 
 public class CategoryMapper {
     public static Category toCategoryAdd(NewCategoryDto newCategoryDto) {

@@ -3,15 +3,16 @@ package ru.practicum.evm.main.controller;
 import lombok.Getter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.FieldError;
+import ru.practicum.evm.main.exception.ForbiddenOperationException;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.ArrayList;
@@ -22,23 +23,34 @@ import java.time.LocalDateTime;
 public class CustomExceptionHandler {
     private static final String REASON = "For the requested operation the conditions are not met.";
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ApiError handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ApiError handleConstraintViolationException(ConstraintViolationException e) {
         List<String> errors = new ArrayList<>();
-        for (FieldError error : e.getBindingResult().getFieldErrors()) {
-            errors.add("Field: " + error.getField() +
-                       ". Error: " + error.getDefaultMessage() +
-                       ". Value: " + error.getRejectedValue());
+        for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
+            String[] pathElements = violation.getPropertyPath().toString().split("\\.");
+            errors.add("Field: " + pathElements[pathElements.length - 1] +
+                       ". Error: " + violation.getMessage() +
+                       ". Value: " + violation.getInvalidValue());
         }
+        String[] pathElements = e.getConstraintViolations().stream().findAny().get()
+                .getPropertyPath().toString().split("\\.");
         String reason = "Incorrectly made request.";
-        String message = "During [" +  e.getBindingResult().getObjectName() +
+        String message = "During [" +  pathElements[pathElements.length - 2] +
                          "] validation " + errors.size() + " errors were found";
         String status = String.valueOf(HttpStatus.BAD_REQUEST);
-        log.warn("MethodArgumentNotValidException during [{}] validation",
-                 e.getBindingResult().getObjectName());
+        log.warn("ConstraintViolationException during [{}] validation",
+                 pathElements[pathElements.length - 2]);
         return new ApiError(errors, reason, message, status, LocalDateTime.now());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseBody
+    public ApiError handleForbiddenOperationException(ForbiddenOperationException e) {
+        String status = String.valueOf(HttpStatus.FORBIDDEN);
+        return new ApiError(null, REASON, e.getMessage(), status, LocalDateTime.now());
     }
 
     @ExceptionHandler

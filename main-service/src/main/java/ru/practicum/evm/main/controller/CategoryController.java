@@ -1,21 +1,14 @@
 package ru.practicum.evm.main.controller;
 
 import org.springframework.web.bind.annotation.*;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.practicum.evm.main.service.CategoryService;
-import ru.practicum.evm.main.mapper.CategoryMapper;
-import ru.practicum.evm.main.model.Category;
 import ru.practicum.evm.main.dto.CategoryDto;
 import ru.practicum.evm.main.dto.NewCategoryDto;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import java.util.stream.Collectors;
 import java.util.List;
 
 @RestController
-@Validated
 public class CategoryController {
     private final CategoryService categoryService;
 
@@ -25,29 +18,24 @@ public class CategoryController {
     }
 
     @GetMapping("/categories")
-    public List<CategoryDto> getCategories(@Min(0) @RequestParam(defaultValue = "0") int from,
-                                           @Min(1) @RequestParam(defaultValue = "10") int size) {
-        return categoryService.getCategories(from, size)
-                .stream()
-                .map(CategoryMapper::toCategoryDto)
-                .collect(Collectors.toList());
+    public List<CategoryDto> getCategories(@RequestParam(defaultValue = "0") int from,
+                                           @RequestParam(defaultValue = "10") int size) {
+        return categoryService.getCategories(from, size);
     }
 
     @GetMapping("/categories/{catId}")
     public CategoryDto getCategoryById(@PathVariable Long catId) {
-        return CategoryMapper.toCategoryDto(categoryService.getCategoryById(catId));
+        return categoryService.getCategoryById(catId);
     }
 
     @PostMapping("/admin/categories")
-    public CategoryDto addCategory(@Valid @RequestBody NewCategoryDto newCategoryDto) {
-        Category category = CategoryMapper.toCategoryAdd(newCategoryDto);
-        return CategoryMapper.toCategoryDto(categoryService.addCategory(category));
+    public CategoryDto addCategory(@RequestBody NewCategoryDto newCategoryDto) {
+        return categoryService.addCategory(newCategoryDto);
     }
 
     @PatchMapping("/admin/categories")
-    public CategoryDto updateCategory(@Valid @RequestBody CategoryDto categoryDto) {
-        Category category = CategoryMapper.toCategoryUpdate(categoryDto);
-        return CategoryMapper.toCategoryDto(categoryService.updateCategory(category));
+    public CategoryDto updateCategory(@RequestBody CategoryDto categoryDto) {
+        return categoryService.updateCategory(categoryDto);
     }
 
     @DeleteMapping("/admin/categories/{catId}")

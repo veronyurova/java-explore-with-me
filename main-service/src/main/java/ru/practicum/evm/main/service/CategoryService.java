@@ -1,16 +1,20 @@
 package ru.practicum.evm.main.service;
 
-import org.springframework.data.domain.Page;
-import ru.practicum.evm.main.model.Category;
+import ru.practicum.evm.main.dto.CategoryDto;
+import ru.practicum.evm.main.dto.NewCategoryDto;
+
+import javax.validation.constraints.Min;
+import javax.validation.Valid;
+import java.util.List;
 
 public interface CategoryService {
-    Page<Category> getCategories(int from, int size);
+    List<CategoryDto> getCategories(@Min(0) int from, @Min(1) int size);
 
-    Category getCategoryById(Long catId);
+    CategoryDto getCategoryById(Long catId);
 
-    Category addCategory(Category category);
+    CategoryDto addCategory(@Valid NewCategoryDto newCategoryDto);
 
-    Category updateCategory(Category newCategory);
+    CategoryDto updateCategory(@Valid CategoryDto categoryDto);
 
     void deleteCategoryById(Long catId);
 }
