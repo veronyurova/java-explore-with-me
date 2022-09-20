@@ -38,6 +38,7 @@ public class Event {
     private Integer participantLimit;
     @Column(name = "request_moderation")
     private Boolean requestModeration;
+    @Enumerated(EnumType.STRING)
     private EventState state;
     @Column(name = "created_on")
     private LocalDateTime createdOn;

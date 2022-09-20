@@ -3,9 +3,11 @@ package ru.practicum.evm.main.service;
 import ru.practicum.evm.main.dto.EventFullDto;
 import ru.practicum.evm.main.dto.NewEventDto;
 import ru.practicum.evm.main.dto.UpdateEventRequest;
+import ru.practicum.evm.main.dto.AdminUpdateEventRequest;
 
 import javax.validation.constraints.Min;
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventService {
@@ -18,4 +20,15 @@ public interface EventService {
     EventFullDto getEventById(Long userId, Long eventId);
 
     EventFullDto cancelEvent(Long userId, Long eventId);
+
+    List<EventFullDto> searchEvents(List<Long> users,
+                                    List<String> states, List<Long> categories,
+                                    LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                    @Min(0) int from, @Min(1) int size);
+
+    EventFullDto adminUpdateEvent(Long eventId, AdminUpdateEventRequest newEvent);
+
+    EventFullDto publishEvent(Long eventId);
+
+    EventFullDto rejectEvent(Long eventId);
 }
