@@ -21,9 +21,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "AND (e.eventDate >= :rangeStart) " +
             "AND (CAST(:rangeEnd AS date) IS NULL OR e.eventDate <= :rangeEnd)")
     List<Event> searchEvents(List<Long> users,
-                              List<EventState> states,
-                              List<Long> categories,
-                              LocalDateTime rangeStart,
-                              LocalDateTime rangeEnd,
-                              Pageable pageable);
+                             List<EventState> states,
+                             List<Long> categories,
+                             LocalDateTime rangeStart,
+                             LocalDateTime rangeEnd,
+                             Pageable pageable);
 }

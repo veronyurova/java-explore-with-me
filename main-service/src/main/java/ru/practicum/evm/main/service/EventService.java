@@ -17,7 +17,7 @@ public interface EventService {
 
     EventFullDto updateEvent(Long userId, @Valid UpdateEventRequest newEvent);
 
-    EventFullDto getEventById(Long userId, Long eventId);
+    EventFullDto getUserEventById(Long userId, Long eventId);
 
     EventFullDto cancelEvent(Long userId, Long eventId);
 
@@ -31,4 +31,6 @@ public interface EventService {
     EventFullDto publishEvent(Long eventId);
 
     EventFullDto rejectEvent(Long eventId);
+
+    EventFullDto getEventById(Long eventId);
 }

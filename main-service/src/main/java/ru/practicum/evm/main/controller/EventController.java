@@ -41,9 +41,9 @@ public class EventController {
     }
 
     @GetMapping("/users/{userId}/events/{eventId}")
-    public EventFullDto getEventById(@PathVariable Long userId,
-                                     @PathVariable Long eventId) {
-        return eventService.getEventById(userId, eventId);
+    public EventFullDto getUserEventById(@PathVariable Long userId,
+                                         @PathVariable Long eventId) {
+        return eventService.getUserEventById(userId, eventId);
     }
 
     @PatchMapping("/users/{userId}/events/{eventId}")

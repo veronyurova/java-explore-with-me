@@ -22,5 +22,6 @@ public class ParticipationRequest {
     @Column(name = "requester_id")
     private Long requester;
     private LocalDateTime created;
+    @Enumerated(EnumType.STRING)
     private RequestStatus status;
 }

@@ -38,7 +38,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventFullDto> getUserEvents(Long userId, @Min(0) int from, @Min(1) int size) {
-        return eventRepository.findAllByInitiatorId(userId, PageRequest.of(from / size, size))
+        Pageable pageable = PageRequest.of(from / size, size);
+        return eventRepository.findAllByInitiatorId(userId, pageable)
                 .stream()
                 .map(EventMapper::toEventFullDto)
                 .collect(Collectors.toList());
@@ -67,46 +68,28 @@ public class EventServiceImpl implements EventService {
             log.warn("ForbiddenOperationException at EventServiceImpl.updateEvent: {}", message);
             throw new ForbiddenOperationException(message);
         }
-        boolean isUpdated = false;
-        if (newEvent.getTitle() != null) {
-            event.setTitle(newEvent.getTitle());
-            isUpdated = true;
-        }
-        if (newEvent.getAnnotation() != null) {
-            event.setAnnotation(newEvent.getAnnotation());
-            isUpdated = true;
-        }
-        if (newEvent.getDescription() != null) {
-            event.setDescription(newEvent.getDescription());
-            isUpdated = true;
-        }
-        if (newEvent.getEventDate() != null) {
-            event.setEventDate(newEvent.getEventDate());
-            isUpdated = true;
-        }
-        if (newEvent.getPaid() != null) {
-            event.setPaid(newEvent.getPaid());
-            isUpdated = true;
-        }
+        if (newEvent.getTitle() != null) event.setTitle(newEvent.getTitle());
+        if (newEvent.getAnnotation() != null) event.setAnnotation(newEvent.getAnnotation());
+        if (newEvent.getDescription() != null) event.setDescription(newEvent.getDescription());
+        if (newEvent.getEventDate() != null) event.setEventDate(newEvent.getEventDate());
+        if (newEvent.getPaid() != null) event.setPaid(newEvent.getPaid());
         if (newEvent.getCategory() != null) {
             event.setCategory(new Category(newEvent.getCategory(), null));
-            isUpdated = true;
         }
         if (newEvent.getParticipantLimit() != null) {
             event.setParticipantLimit(newEvent.getParticipantLimit());
-            isUpdated = true;
         }
-        if (isUpdated) event.setState(EventState.PENDING);
+        event.setState(EventState.PENDING);
         Event updatedEvent = eventRepository.save(event);
         log.info("EventServiceImpl.updateEvent: event {} successfully updated", event.getId());
         return EventMapper.toEventFullDto(updatedEvent);
     }
 
     @Override
-    public EventFullDto getEventById(Long userId, Long eventId) {
+    public EventFullDto getUserEventById(Long userId, Long eventId) {
         Event event = findEventById(eventId);
         if (!userId.equals(event.getInitiator().getId())) {
-            String message = "Only initiator can view full event.";
+            String message = "Only initiator can get full event.";
             log.warn("ForbiddenOperationException at EventServiceImpl: {}", message);
             throw new ForbiddenOperationException(message);
         }
@@ -163,27 +146,15 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto adminUpdateEvent(Long eventId, AdminUpdateEventRequest newEvent) {
         Event event = findEventById(eventId);
-        if (newEvent.getTitle() != null) {
-            event.setTitle(newEvent.getTitle());
-        }
-        if (newEvent.getAnnotation() != null) {
-            event.setAnnotation(newEvent.getAnnotation());
-        }
-        if (newEvent.getDescription() != null) {
-            event.setDescription(newEvent.getDescription());
-        }
-        if (newEvent.getEventDate() != null) {
-            event.setEventDate(newEvent.getEventDate());
-        }
+        if (newEvent.getTitle() != null) event.setTitle(newEvent.getTitle());
+        if (newEvent.getAnnotation() != null) event.setAnnotation(newEvent.getAnnotation());
+        if (newEvent.getDescription() != null) event.setDescription(newEvent.getDescription());
+        if (newEvent.getEventDate() != null) event.setEventDate(newEvent.getEventDate());
         if (newEvent.getLocation() != null) {
-            event.setLocation(new Location(
-                    newEvent.getLocation().getLat(),
-                    newEvent.getLocation().getLon()
-            ));
+            event.setLocation(new Location(newEvent.getLocation().getLat(),
+                                           newEvent.getLocation().getLon()));
         }
-        if (newEvent.getPaid() != null) {
-            event.setPaid(newEvent.getPaid());
-        }
+        if (newEvent.getPaid() != null) event.setPaid(newEvent.getPaid());
         if (newEvent.getCategory() != null) {
             event.setCategory(new Category(newEvent.getCategory(), null));
         }
@@ -229,6 +200,12 @@ public class EventServiceImpl implements EventService {
         Event rejectedEvent = eventRepository.save(event);
         log.info("EventServiceImpl.rejectEvent: event {} successfully rejected", event.getId());
         return EventMapper.toEventFullDto(rejectedEvent);
+    }
+
+    @Override
+    public EventFullDto getEventById(Long eventId) {
+        Event event = findEventById(eventId);
+        return EventMapper.toEventFullDto(event);
     }
 
     private Event findEventById(Long eventId) {

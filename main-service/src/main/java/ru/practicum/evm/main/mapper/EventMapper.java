@@ -1,14 +1,25 @@
 package ru.practicum.evm.main.mapper;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.practicum.evm.main.dto.*;
 import ru.practicum.evm.main.model.Event;
 import ru.practicum.evm.main.model.EventState;
 import ru.practicum.evm.main.model.Location;
 import ru.practicum.evm.main.model.Category;
+import ru.practicum.evm.main.service.RequestService;
 
 import java.time.LocalDateTime;
 
+@Component
 public class EventMapper {
+    private static RequestService reqService;
+
+    @Autowired
+    public EventMapper(RequestService requestService) {
+        reqService = requestService;
+    }
+
     public static Event toEventAdd(NewEventDto newEventDto) {
         return new Event(
                 null,
@@ -43,7 +54,7 @@ public class EventMapper {
                 new CategoryDto(event.getCategory().getId(), event.getCategory().getName()),
                 new UserShortDto(event.getInitiator().getId(), event.getInitiator().getName()),
                 event.getParticipantLimit(),
-                0, //TODO
+                reqService.getConfirmedRequests(event.getId()),
                 event.getRequestModeration(),
                 event.getState().toString(),
                 event.getCreatedOn(),
