@@ -21,6 +21,29 @@ public class EventController {
         this.eventService = eventService;
     }
 
+    @GetMapping("/events")
+    public List<EventFullDto> getEvents(@RequestParam(required = false) String text,
+                                        @RequestParam(required = false) List<Long> categories,
+                                        @RequestParam(required = false) Boolean paid,
+                                        @RequestParam(required = false)
+                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                        LocalDateTime rangeStart,
+                                        @RequestParam(required = false)
+                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                        LocalDateTime rangeEnd,
+                                        @RequestParam(defaultValue = "false") Boolean onlyAvailable,
+                                        @RequestParam(required = false) String sort,
+                                        @RequestParam(defaultValue = "0") int from,
+                                        @RequestParam(defaultValue = "10") int size) {
+        return eventService.getEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable,
+                                      sort, from, size);
+    }
+
+    @GetMapping("/events/{id}")
+    public EventFullDto getPublishedEventById(@PathVariable Long id) {
+        return eventService.getPublishedEventById(id);
+    }
+
     @GetMapping("/users/{userId}/events")
     public List<EventFullDto> getUserEvents(@PathVariable Long userId,
                                             @RequestParam(defaultValue = "0") int from,

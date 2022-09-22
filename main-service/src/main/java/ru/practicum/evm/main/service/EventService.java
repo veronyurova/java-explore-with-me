@@ -1,5 +1,6 @@
 package ru.practicum.evm.main.service;
 
+import ru.practicum.evm.main.model.Sort;
 import ru.practicum.evm.main.dto.EventFullDto;
 import ru.practicum.evm.main.dto.NewEventDto;
 import ru.practicum.evm.main.dto.UpdateEventRequest;
@@ -11,6 +12,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventService {
+    List<EventFullDto> getEvents(String text, List<Long> categories, Boolean paid,
+                                 LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                 Boolean onlyAvailable, String sort,
+                                 @Min(0) int from, @Min(1) int size);
+
+    EventFullDto getPublishedEventById(Long eventId);
+
     List<EventFullDto> getUserEvents(Long userId, @Min(0) int from, @Min(1) int size);
 
     EventFullDto addEvent(Long userId, @Valid NewEventDto newEventDto);

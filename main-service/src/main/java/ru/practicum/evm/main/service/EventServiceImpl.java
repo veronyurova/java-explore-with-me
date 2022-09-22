@@ -15,14 +15,13 @@ import ru.practicum.evm.main.dto.UpdateEventRequest;
 import ru.practicum.evm.main.dto.AdminUpdateEventRequest;
 import ru.practicum.evm.main.exception.ForbiddenOperationException;
 import ru.practicum.evm.main.exception.IncorrectEventStateException;
+import ru.practicum.evm.main.exception.IncorrectSortCriteriaException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.Min;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -34,6 +33,65 @@ public class EventServiceImpl implements EventService {
     @Autowired
     public EventServiceImpl(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
+    }
+
+    @Override
+    public List<EventFullDto> getEvents(String text, List<Long> categories, Boolean paid,
+                                        LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                        Boolean onlyAvailable, String sort, int from, int size) {
+        if (text.isBlank()) return Collections.emptyList();
+        if (rangeStart == null) rangeStart = LocalDateTime.now();
+        List<EventFullDto> events = eventRepository.findEvents(text, categories, paid, rangeStart, rangeEnd)
+                .stream()
+                .map(EventMapper::toEventFullDto)
+                .collect(Collectors.toList());
+        if (onlyAvailable) {
+            events = events
+                    .stream()
+                    .filter(e -> e.getConfirmedRequests() < e.getParticipantLimit()
+                            || e.getParticipantLimit() == 0)
+                    .collect(Collectors.toList());
+        }
+        if (sort != null) {
+            Sort extractedSort;
+            try {
+                extractedSort = Sort.valueOf(sort);
+            } catch (IllegalArgumentException e) {
+                String message = String.format("Unknown sorting criteria: %s", sort);
+                log.warn("IncorrectSortCriteriaException at EventServiceImpl.getEvents: {}", message);
+                throw new IncorrectSortCriteriaException(message);
+            }
+            switch (extractedSort) {
+                case EVENT_DATE:
+                    events = events
+                            .stream()
+                            .sorted(Comparator.comparing(EventFullDto::getEventDate))
+                            .collect(Collectors.toList());
+                    break;
+                case VIEWS:
+                    events = events
+                            .stream()
+                            .sorted(Comparator.comparingLong(EventFullDto::getViews))
+                            .collect(Collectors.toList());
+                    break;
+            }
+        }
+        return events
+                .stream()
+                .skip(from)
+                .limit(size)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public EventFullDto getPublishedEventById(Long eventId) {
+        Event event = findEventById(eventId);
+        if (!EventState.PUBLISHED.equals(event.getState())) {
+            String message = "Only published events can be viewed publicly.";
+            log.warn("ForbiddenOperationException at EventServiceImpl.getPublishedEventById: {}", message);
+            throw new ForbiddenOperationException(message);
+        }
+        return EventMapper.toEventFullDto(event);
     }
 
     @Override
@@ -129,8 +187,7 @@ public class EventServiceImpl implements EventService {
                     eventStates.add(EventState.valueOf(state));
                 } catch (IllegalArgumentException e) {
                     String message = String.format("Unknown state: %s", state);
-                    log.warn("IncorrectEventStateException at EventServiceImpl.searchEvents: {}",
-                             message);
+                    log.warn("IncorrectEventStateException at EventServiceImpl.searchEvents: {}", message);
                     throw new IncorrectEventStateException(message);
                 }
             }
