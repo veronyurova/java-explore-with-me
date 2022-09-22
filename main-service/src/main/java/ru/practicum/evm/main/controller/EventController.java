@@ -26,10 +26,10 @@ public class EventController {
                                         @RequestParam(required = false) List<Long> categories,
                                         @RequestParam(required = false) Boolean paid,
                                         @RequestParam(required = false)
-                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                         LocalDateTime rangeStart,
                                         @RequestParam(required = false)
-                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                         LocalDateTime rangeEnd,
                                         @RequestParam(defaultValue = "false") Boolean onlyAvailable,
                                         @RequestParam(required = false) String sort,
@@ -80,10 +80,10 @@ public class EventController {
                                            @RequestParam(required = false) List<String> states,
                                            @RequestParam(required = false) List<Long> categories,
                                            @RequestParam(required = false)
-                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                           @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                            LocalDateTime rangeStart,
                                            @RequestParam(required = false)
-                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                           @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                            LocalDateTime rangeEnd,
                                            @RequestParam(defaultValue = "0") int from,
                                            @RequestParam(defaultValue = "10") int size) {

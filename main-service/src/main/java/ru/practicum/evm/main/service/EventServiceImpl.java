@@ -6,13 +6,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
+import ru.practicum.evm.main.dto.*;
 import ru.practicum.evm.main.repository.EventRepository;
 import ru.practicum.evm.main.mapper.EventMapper;
 import ru.practicum.evm.main.model.*;
-import ru.practicum.evm.main.dto.EventFullDto;
-import ru.practicum.evm.main.dto.NewEventDto;
-import ru.practicum.evm.main.dto.UpdateEventRequest;
-import ru.practicum.evm.main.dto.AdminUpdateEventRequest;
 import ru.practicum.evm.main.exception.ForbiddenOperationException;
 import ru.practicum.evm.main.exception.IncorrectEventStateException;
 import ru.practicum.evm.main.exception.IncorrectSortCriteriaException;
@@ -263,6 +260,14 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getEventById(Long eventId) {
         Event event = findEventById(eventId);
         return EventMapper.toEventFullDto(event);
+    }
+
+    @Override
+    public List<EventShortDto> getEventsByIds(List<Long> ids) {
+        return eventRepository.findAllById(ids)
+                .stream()
+                .map(EventMapper::toEventShortDto)
+                .collect(Collectors.toList());
     }
 
     private Event findEventById(Long eventId) {

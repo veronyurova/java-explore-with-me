@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.AllArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @EqualsAndHashCode
@@ -13,5 +13,5 @@ public class CompilationDto {
     private Long id;
     private String title;
     private Boolean pinned;
-    private Set<EventShortDto> events;
+    private List<EventShortDto> events;
 }

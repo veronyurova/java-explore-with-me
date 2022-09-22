@@ -1,10 +1,6 @@
 package ru.practicum.evm.main.service;
 
-import ru.practicum.evm.main.model.Sort;
-import ru.practicum.evm.main.dto.EventFullDto;
-import ru.practicum.evm.main.dto.NewEventDto;
-import ru.practicum.evm.main.dto.UpdateEventRequest;
-import ru.practicum.evm.main.dto.AdminUpdateEventRequest;
+import ru.practicum.evm.main.dto.*;
 
 import javax.validation.constraints.Min;
 import javax.validation.Valid;
@@ -41,4 +37,6 @@ public interface EventService {
     EventFullDto rejectEvent(Long eventId);
 
     EventFullDto getEventById(Long eventId);
+
+    List<EventShortDto> getEventsByIds(List<Long> ids);
 }
