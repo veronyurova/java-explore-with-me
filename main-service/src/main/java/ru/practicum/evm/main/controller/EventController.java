@@ -4,21 +4,26 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.evm.main.service.EventService;
+import ru.practicum.evm.main.client.StatsClient;
+import ru.practicum.evm.main.model.EndpointHit;
 import ru.practicum.evm.main.dto.EventFullDto;
 import ru.practicum.evm.main.dto.NewEventDto;
 import ru.practicum.evm.main.dto.UpdateEventRequest;
 import ru.practicum.evm.main.dto.AdminUpdateEventRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 public class EventController {
     private final EventService eventService;
+    private final StatsClient statsClient;
 
     @Autowired
-    public EventController(EventService eventService) {
+    public EventController(EventService eventService, StatsClient statsClient) {
         this.eventService = eventService;
+        this.statsClient = statsClient;
     }
 
     @GetMapping("/events")
@@ -34,13 +39,30 @@ public class EventController {
                                         @RequestParam(defaultValue = "false") Boolean onlyAvailable,
                                         @RequestParam(required = false) String sort,
                                         @RequestParam(defaultValue = "0") int from,
-                                        @RequestParam(defaultValue = "10") int size) {
+                                        @RequestParam(defaultValue = "10") int size,
+                                        HttpServletRequest request) {
+        EndpointHit endpointHit = new EndpointHit(
+                null,
+                "explore-with-me",
+                request.getRequestURI(),
+                request.getRemoteAddr(),
+                LocalDateTime.now()
+        );
+        statsClient.saveHit(endpointHit);
         return eventService.getEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable,
                                       sort, from, size);
     }
 
     @GetMapping("/events/{id}")
-    public EventFullDto getPublishedEventById(@PathVariable Long id) {
+    public EventFullDto getPublishedEventById(@PathVariable Long id, HttpServletRequest request) {
+        EndpointHit endpointHit = new EndpointHit(
+                null,
+                "explore-with-me",
+                request.getRequestURI(),
+                request.getRemoteAddr(),
+                LocalDateTime.now()
+        );
+        statsClient.saveHit(endpointHit);
         return eventService.getPublishedEventById(id);
     }
 

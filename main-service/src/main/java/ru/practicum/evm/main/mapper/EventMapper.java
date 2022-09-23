@@ -3,21 +3,24 @@ package ru.practicum.evm.main.mapper;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.practicum.evm.main.service.RequestService;
+import ru.practicum.evm.main.client.StatsClient;
+import org.springframework.http.ResponseEntity;
+import ru.practicum.evm.main.model.*;
 import ru.practicum.evm.main.dto.*;
-import ru.practicum.evm.main.model.Event;
-import ru.practicum.evm.main.model.EventState;
-import ru.practicum.evm.main.model.Location;
-import ru.practicum.evm.main.model.Category;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 public class EventMapper {
     private static RequestService reqService;
+    private static StatsClient client;
 
     @Autowired
-    public EventMapper(RequestService requestService) {
+    public EventMapper(RequestService requestService,
+                       StatsClient statsClient) {
         reqService = requestService;
+        client = statsClient;
     }
 
     public static Event toEventAdd(NewEventDto newEventDto) {
@@ -59,7 +62,7 @@ public class EventMapper {
                 event.getState().toString(),
                 event.getCreatedOn(),
                 event.getPublishedOn(),
-                0L // TODO
+                getViews(event.getId())
         );
     }
 
@@ -73,7 +76,18 @@ public class EventMapper {
                 new CategoryDto(event.getCategory().getId(), event.getCategory().getName()),
                 new UserShortDto(event.getInitiator().getId(), event.getInitiator().getName()),
                 reqService.getConfirmedRequests(event.getId()),
-                0L // TODO
+                getViews(event.getId())
         );
+    }
+
+    public static Long getViews(Long eventId) {
+        ResponseEntity<Object> responseEntity = client.getStats(
+                LocalDateTime.of(2022, 9, 1, 0, 0),
+                LocalDateTime.now(),
+                List.of("/events/" + eventId),
+                false);
+        String body = responseEntity.getBody().toString();
+        String hits = body.split("hits=")[1].split("}")[0];
+        return Long.parseLong(hits);
     }
 }

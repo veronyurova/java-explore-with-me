@@ -3,7 +3,6 @@ package ru.practicum.evm.main.model;
 import lombok.*;
 
 import javax.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
