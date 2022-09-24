@@ -9,6 +9,7 @@ import ru.practicum.evm.main.model.*;
 import ru.practicum.evm.main.dto.*;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Component
@@ -80,14 +81,27 @@ public class EventMapper {
         );
     }
 
+    public static EventShortDto toEventShortFromFull(EventFullDto event) {
+        return new EventShortDto(
+                event.getId(),
+                event.getTitle(),
+                event.getAnnotation(),
+                event.getEventDate(),
+                event.getPaid(),
+                event.getCategory(),
+                event.getInitiator(),
+                event.getConfirmedRequests(),
+                event.getViews()
+        );
+    }
+
     public static Long getViews(Long eventId) {
         ResponseEntity<Object> responseEntity = client.getStats(
                 LocalDateTime.of(2022, 9, 1, 0, 0),
                 LocalDateTime.now(),
                 List.of("/events/" + eventId),
                 false);
-        String body = responseEntity.getBody().toString();
-        String hits = body.split("hits=")[1].split("}")[0];
-        return Long.parseLong(hits);
+        Integer hits = (Integer) ((LinkedHashMap) responseEntity.getBody()).get("hits");
+        return Long.valueOf(hits);
     }
 }

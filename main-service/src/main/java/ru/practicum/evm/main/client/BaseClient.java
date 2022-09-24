@@ -1,12 +1,12 @@
 package ru.practicum.evm.main.client;
 
-import java.util.Map;
-import java.util.List;
-
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.HttpStatusCodeException;
+
+import java.util.Map;
+import java.util.List;
 
 public class BaseClient {
     protected final RestTemplate rest;

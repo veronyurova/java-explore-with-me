@@ -8,10 +8,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventService {
-    List<EventFullDto> getEvents(String text, List<Long> categories, Boolean paid,
-                                 LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                 Boolean onlyAvailable, String sort,
-                                 @Min(0) int from, @Min(1) int size);
+    List<EventShortDto> getEvents(String text, List<Long> categories, Boolean paid,
+                                  LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                  Boolean onlyAvailable, String sort,
+                                  @Min(0) int from, @Min(1) int size);
 
     EventFullDto getPublishedEventById(Long eventId);
 

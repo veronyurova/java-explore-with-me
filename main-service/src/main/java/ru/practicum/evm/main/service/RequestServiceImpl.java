@@ -83,8 +83,7 @@ public class RequestServiceImpl implements RequestService {
         }
         request.setStatus(RequestStatus.CANCELED);
         ParticipationRequest cancelledRequest = requestRepository.save(request);
-        log.info("RequestServiceImpl.cancelRequest: request {} successfully cancelled",
-                 request.getId());
+        log.info("RequestServiceImpl.cancelRequest: request {} successfully cancelled", request.getId());
         return RequestMapper.toRequestDto(cancelledRequest);
     }
 
@@ -109,8 +108,7 @@ public class RequestServiceImpl implements RequestService {
         ParticipationRequest request = findRequestById(reqId);
         request.setStatus(RequestStatus.CONFIRMED);
         ParticipationRequest confirmedRequest = requestRepository.save(request);
-        log.info("RequestServiceImpl.confirmRequest: request {} successfully confirmed",
-                 request.getId());
+        log.info("RequestServiceImpl.confirmRequest: request {} successfully confirmed", request.getId());
         if (event.getConfirmedRequests() == event.getParticipantLimit() - 1) {
             requestRepository.rejectPendingRequests(eventId);
         }
@@ -123,8 +121,7 @@ public class RequestServiceImpl implements RequestService {
         ParticipationRequest request = findRequestById(reqId);
         request.setStatus(RequestStatus.REJECTED);
         ParticipationRequest rejectedRequest = requestRepository.save(request);
-        log.info("RequestServiceImpl.rejectRequest: request {} successfully rejected",
-                 request.getId());
+        log.info("RequestServiceImpl.rejectRequest: request {} successfully rejected", request.getId());
         return RequestMapper.toRequestDto(rejectedRequest);
     }
 

@@ -6,9 +6,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
-import ru.practicum.evm.main.dto.*;
 import ru.practicum.evm.main.repository.EventRepository;
 import ru.practicum.evm.main.mapper.EventMapper;
+import ru.practicum.evm.main.dto.*;
 import ru.practicum.evm.main.model.*;
 import ru.practicum.evm.main.exception.ForbiddenOperationException;
 import ru.practicum.evm.main.exception.IncorrectEventStateException;
@@ -33,9 +33,17 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventFullDto> getEvents(String text, List<Long> categories, Boolean paid,
-                                        LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                        Boolean onlyAvailable, String sort, int from, int size) {
+    /* 1. Метод получает из репозитория события, подходящие под переданные условия:
+          - текст поиска
+          - платность
+          - диапазон дат, в которые должна попадать дата начала события
+       2. Если были запрошены только доступные события:
+          - из результата отбираются события, у которых не превышен лимит участников
+       3. Результат сортируется в соответствии с переданным критерием сортировки.
+       4. Возвращается конечный результат с пагинацией. */
+    public List<EventShortDto> getEvents(String text, List<Long> categories, Boolean paid,
+                                         LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                         Boolean onlyAvailable, String sort, int from, int size) {
         if (text.isBlank()) return Collections.emptyList();
         if (rangeStart == null) rangeStart = LocalDateTime.now();
         List<EventFullDto> events = eventRepository.findEvents(text, categories, paid, rangeStart, rangeEnd)
@@ -77,6 +85,7 @@ public class EventServiceImpl implements EventService {
                 .stream()
                 .skip(from)
                 .limit(size)
+                .map(EventMapper::toEventShortFromFull)
                 .collect(Collectors.toList());
     }
 

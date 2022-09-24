@@ -46,8 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto addCategory(@Valid NewCategoryDto newCategoryDto) {
         Category category = CategoryMapper.toCategoryAdd(newCategoryDto);
         Category addedCategory = categoryRepository.save(category);
-        log.info("CategoryServiceImpl.addCategory: category {} successfully added",
-                 addedCategory.getId());
+        log.info("CategoryServiceImpl.addCategory: category {} successfully added", addedCategory.getId());
         return CategoryMapper.toCategoryDto(addedCategory);
     }
 
@@ -57,16 +56,14 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = findCategoryById(newCategory.getId());
         category.setName(newCategory.getName());
         Category updatedCategory = categoryRepository.save(category);
-        log.info("CategoryServiceImpl.updateCategory: category {} successfully updated",
-                 category.getId());
+        log.info("CategoryServiceImpl.updateCategory: category {} successfully updated", category.getId());
         return CategoryMapper.toCategoryDto(updatedCategory);
     }
 
     @Override
     public void deleteCategoryById(Long catId) {
         categoryRepository.deleteById(catId);
-        log.info("CategoryServiceImpl.deleteCategoryById: category {} successfully deleted",
-                 catId);
+        log.info("CategoryServiceImpl.deleteCategoryById: category {} successfully deleted", catId);
     }
 
     private Category findCategoryById(Long catId) {

@@ -3,13 +3,10 @@ package ru.practicum.evm.main.controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.practicum.evm.main.dto.*;
 import ru.practicum.evm.main.service.EventService;
 import ru.practicum.evm.main.client.StatsClient;
 import ru.practicum.evm.main.model.EndpointHit;
-import ru.practicum.evm.main.dto.EventFullDto;
-import ru.practicum.evm.main.dto.NewEventDto;
-import ru.practicum.evm.main.dto.UpdateEventRequest;
-import ru.practicum.evm.main.dto.AdminUpdateEventRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -27,20 +24,20 @@ public class EventController {
     }
 
     @GetMapping("/events")
-    public List<EventFullDto> getEvents(@RequestParam(required = false) String text,
-                                        @RequestParam(required = false) List<Long> categories,
-                                        @RequestParam(required = false) Boolean paid,
-                                        @RequestParam(required = false)
-                                        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                        LocalDateTime rangeStart,
-                                        @RequestParam(required = false)
-                                        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                        LocalDateTime rangeEnd,
-                                        @RequestParam(defaultValue = "false") Boolean onlyAvailable,
-                                        @RequestParam(required = false) String sort,
-                                        @RequestParam(defaultValue = "0") int from,
-                                        @RequestParam(defaultValue = "10") int size,
-                                        HttpServletRequest request) {
+    public List<EventShortDto> getEvents(@RequestParam(required = false) String text,
+                                         @RequestParam(required = false) List<Long> categories,
+                                         @RequestParam(required = false) Boolean paid,
+                                         @RequestParam(required = false)
+                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                         LocalDateTime rangeStart,
+                                         @RequestParam(required = false)
+                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                         LocalDateTime rangeEnd,
+                                         @RequestParam(defaultValue = "false") Boolean onlyAvailable,
+                                         @RequestParam(required = false) String sort,
+                                         @RequestParam(defaultValue = "0") int from,
+                                         @RequestParam(defaultValue = "10") int size,
+                                         HttpServletRequest request) {
         EndpointHit endpointHit = new EndpointHit(
                 null,
                 "explore-with-me",
