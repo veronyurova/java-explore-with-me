@@ -125,11 +125,6 @@ public class RequestServiceImpl implements RequestService {
         return RequestMapper.toRequestDto(rejectedRequest);
     }
 
-    @Override
-    public Integer getConfirmedRequests(Long eventId) {
-        return requestRepository.countByEventAndStatus(eventId, RequestStatus.CONFIRMED);
-    }
-
     private ParticipationRequest findRequestById(Long requestId) {
         Optional<ParticipationRequest> requestOptional = requestRepository.findById(requestId);
         if (requestOptional.isEmpty()) {

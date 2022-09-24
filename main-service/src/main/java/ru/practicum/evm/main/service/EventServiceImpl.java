@@ -26,10 +26,11 @@ import java.util.stream.Collectors;
 @Validated
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
-
+    private final EventMapper eventMapper;
     @Autowired
-    public EventServiceImpl(EventRepository eventRepository) {
+    public EventServiceImpl(EventRepository eventRepository, EventMapper eventMapper) {
         this.eventRepository = eventRepository;
+        this.eventMapper = eventMapper;
     }
 
     @Override
@@ -48,7 +49,7 @@ public class EventServiceImpl implements EventService {
         if (rangeStart == null) rangeStart = LocalDateTime.now();
         List<EventFullDto> events = eventRepository.findEvents(text, categories, paid, rangeStart, rangeEnd)
                 .stream()
-                .map(EventMapper::toEventFullDto)
+                .map(eventMapper::toEventFullDto)
                 .collect(Collectors.toList());
         if (onlyAvailable) {
             events = events
@@ -85,7 +86,7 @@ public class EventServiceImpl implements EventService {
                 .stream()
                 .skip(from)
                 .limit(size)
-                .map(EventMapper::toEventShortFromFull)
+                .map(eventMapper::toEventShortFromFull)
                 .collect(Collectors.toList());
     }
 
@@ -97,7 +98,7 @@ public class EventServiceImpl implements EventService {
             log.warn("ForbiddenOperationException at EventServiceImpl.getPublishedEventById: {}", message);
             throw new ForbiddenOperationException(message);
         }
-        return EventMapper.toEventFullDto(event);
+        return eventMapper.toEventFullDto(event);
     }
 
     @Override
@@ -105,17 +106,17 @@ public class EventServiceImpl implements EventService {
         Pageable pageable = PageRequest.of(from / size, size);
         return eventRepository.findAllByInitiatorId(userId, pageable)
                 .stream()
-                .map(EventMapper::toEventFullDto)
+                .map(eventMapper::toEventFullDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public EventFullDto addEvent(Long userId, @Valid NewEventDto newEventDto) {
-        Event event = EventMapper.toEventAdd(newEventDto);
+        Event event = eventMapper.toEventAdd(newEventDto);
         event.setInitiator(new User(userId, null, null));
         Event addedEvent = eventRepository.save(event);
         log.info("EventServiceImpl.addEvent: event {} successfully added", addedEvent.getId());
-        return EventMapper.toEventFullDto(addedEvent);
+        return eventMapper.toEventFullDto(addedEvent);
     }
 
     @Override
@@ -146,7 +147,7 @@ public class EventServiceImpl implements EventService {
         event.setState(EventState.PENDING);
         Event updatedEvent = eventRepository.save(event);
         log.info("EventServiceImpl.updateEvent: event {} successfully updated", event.getId());
-        return EventMapper.toEventFullDto(updatedEvent);
+        return eventMapper.toEventFullDto(updatedEvent);
     }
 
     @Override
@@ -157,7 +158,7 @@ public class EventServiceImpl implements EventService {
             log.warn("ForbiddenOperationException at EventServiceImpl: {}", message);
             throw new ForbiddenOperationException(message);
         }
-        return EventMapper.toEventFullDto(event);
+        return eventMapper.toEventFullDto(event);
     }
 
     @Override
@@ -176,7 +177,7 @@ public class EventServiceImpl implements EventService {
         event.setState(EventState.CANCELED);
         Event cancelledEvent = eventRepository.save(event);
         log.info("EventServiceImpl.cancelEvent: event {} successfully cancelled", event.getId());
-        return EventMapper.toEventFullDto(cancelledEvent);
+        return eventMapper.toEventFullDto(cancelledEvent);
     }
 
     @Override
@@ -202,7 +203,7 @@ public class EventServiceImpl implements EventService {
         return eventRepository.searchEvents(users, eventStates, categories,
                                             rangeStart, rangeEnd, pageable)
                 .stream()
-                .map(EventMapper::toEventFullDto)
+                .map(eventMapper::toEventFullDto)
                 .collect(Collectors.toList());
     }
 
@@ -229,7 +230,7 @@ public class EventServiceImpl implements EventService {
         }
         Event updatedEvent = eventRepository.save(event);
         log.info("EventServiceImpl.adminUpdateEvent: event {} successfully updated", event.getId());
-        return EventMapper.toEventFullDto(updatedEvent);
+        return eventMapper.toEventFullDto(updatedEvent);
     }
 
     @Override
@@ -248,7 +249,7 @@ public class EventServiceImpl implements EventService {
         event.setState(EventState.PUBLISHED);
         Event publishedEvent = eventRepository.save(event);
         log.info("EventServiceImpl.publishEvent: event {} successfully published", event.getId());
-        return EventMapper.toEventFullDto(publishedEvent);
+        return eventMapper.toEventFullDto(publishedEvent);
     }
 
     @Override
@@ -262,20 +263,20 @@ public class EventServiceImpl implements EventService {
         event.setState(EventState.CANCELED);
         Event rejectedEvent = eventRepository.save(event);
         log.info("EventServiceImpl.rejectEvent: event {} successfully rejected", event.getId());
-        return EventMapper.toEventFullDto(rejectedEvent);
+        return eventMapper.toEventFullDto(rejectedEvent);
     }
 
     @Override
     public EventFullDto getEventById(Long eventId) {
         Event event = findEventById(eventId);
-        return EventMapper.toEventFullDto(event);
+        return eventMapper.toEventFullDto(event);
     }
 
     @Override
     public List<EventShortDto> getEventsByIds(List<Long> ids) {
         return eventRepository.findAllById(ids)
                 .stream()
-                .map(EventMapper::toEventShortDto)
+                .map(eventMapper::toEventShortDto)
                 .collect(Collectors.toList());
     }
 

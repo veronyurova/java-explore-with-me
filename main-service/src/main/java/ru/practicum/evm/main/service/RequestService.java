@@ -16,6 +16,4 @@ public interface RequestService {
     ParticipationRequestDto confirmRequest(Long userId, Long eventId, Long reqId);
 
     ParticipationRequestDto rejectRequest(Long userId, Long eventId, Long reqId);
-
-    Integer getConfirmedRequests(Long eventId);
 }

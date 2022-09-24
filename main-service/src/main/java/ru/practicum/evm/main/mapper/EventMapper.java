@@ -2,7 +2,7 @@ package ru.practicum.evm.main.mapper;
 
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.practicum.evm.main.service.RequestService;
+import ru.practicum.evm.main.repository.RequestRepository;
 import ru.practicum.evm.main.client.StatsClient;
 import org.springframework.http.ResponseEntity;
 import ru.practicum.evm.main.model.*;
@@ -14,17 +14,17 @@ import java.util.List;
 
 @Component
 public class EventMapper {
-    private static RequestService reqService;
-    private static StatsClient client;
+    private final StatsClient statsClient;
+    private final RequestRepository requestRepository;
 
     @Autowired
-    public EventMapper(RequestService requestService,
-                       StatsClient statsClient) {
-        reqService = requestService;
-        client = statsClient;
+    public EventMapper(StatsClient statsClient,
+                       RequestRepository requestRepository) {
+        this.statsClient = statsClient;
+        this.requestRepository = requestRepository;
     }
 
-    public static Event toEventAdd(NewEventDto newEventDto) {
+    public Event toEventAdd(NewEventDto newEventDto) {
         return new Event(
                 null,
                 newEventDto.getTitle(),
@@ -46,7 +46,7 @@ public class EventMapper {
         );
     }
 
-    public static EventFullDto toEventFullDto(Event event) {
+    public EventFullDto toEventFullDto(Event event) {
         return new EventFullDto(
                 event.getId(),
                 event.getTitle(),
@@ -58,7 +58,7 @@ public class EventMapper {
                 new CategoryDto(event.getCategory().getId(), event.getCategory().getName()),
                 new UserShortDto(event.getInitiator().getId(), event.getInitiator().getName()),
                 event.getParticipantLimit(),
-                reqService.getConfirmedRequests(event.getId()),
+                requestRepository.countByEventAndStatus(event.getId(), RequestStatus.CONFIRMED),
                 event.getRequestModeration(),
                 event.getState().toString(),
                 event.getCreatedOn(),
@@ -67,7 +67,7 @@ public class EventMapper {
         );
     }
 
-    public static EventShortDto toEventShortDto(Event event) {
+    public EventShortDto toEventShortDto(Event event) {
         return new EventShortDto(
                 event.getId(),
                 event.getTitle(),
@@ -76,12 +76,12 @@ public class EventMapper {
                 event.getPaid(),
                 new CategoryDto(event.getCategory().getId(), event.getCategory().getName()),
                 new UserShortDto(event.getInitiator().getId(), event.getInitiator().getName()),
-                reqService.getConfirmedRequests(event.getId()),
+                requestRepository.countByEventAndStatus(event.getId(), RequestStatus.CONFIRMED),
                 getViews(event.getId())
         );
     }
 
-    public static EventShortDto toEventShortFromFull(EventFullDto event) {
+    public EventShortDto toEventShortFromFull(EventFullDto event) {
         return new EventShortDto(
                 event.getId(),
                 event.getTitle(),
@@ -95,12 +95,13 @@ public class EventMapper {
         );
     }
 
-    public static Long getViews(Long eventId) {
-        ResponseEntity<Object> responseEntity = client.getStats(
+    public Long getViews(Long eventId) {
+        ResponseEntity<Object> responseEntity = statsClient.getStats(
                 LocalDateTime.of(2022, 9, 1, 0, 0),
                 LocalDateTime.now(),
                 List.of("/events/" + eventId),
-                false);
+                false
+        );
         Integer hits = (Integer) ((LinkedHashMap) responseEntity.getBody()).get("hits");
         return Long.valueOf(hits);
     }
