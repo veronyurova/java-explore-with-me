@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
+    
     @Autowired
     public EventServiceImpl(EventRepository eventRepository, EventMapper eventMapper) {
         this.eventRepository = eventRepository;
