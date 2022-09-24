@@ -78,14 +78,14 @@ public class CustomExceptionHandler {
         String status = String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR);
         return new ApiError(null, reason, e.getMessage(), status, LocalDateTime.now());
     }
-}
 
-@Getter
-@AllArgsConstructor
-class ApiError {
-    private List<String> errors;
-    private String reason;
-    private String message;
-    private String status;
-    private LocalDateTime timestamp;
+    @Getter
+    @AllArgsConstructor
+    class ApiError {
+        private List<String> errors;
+        private String reason;
+        private String message;
+        private String status;
+        private LocalDateTime timestamp;
+    }
 }
