@@ -11,3 +11,4 @@ The application users can create their own events or make requests to participat
 ## PR request link: 
 https://github.com/veronyurova/java-explore-with-me/pull/1
 
+Tests for service and repository layers were added. Custom methods in repositories are covered. Postman tests act as controller tests in this case.
