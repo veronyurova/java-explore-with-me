@@ -32,7 +32,7 @@ public class StatsServiceTest {
     @Test
     void getStats() {
         Mockito
-                .when(statsRepository.countHits(date, date, Mockito.any()))
+                .when(statsRepository.countHits(date, date, null))
                 .thenReturn(1L);
 
         ViewStats stats = statsService.getStats(date, date, null, false);
@@ -44,7 +44,7 @@ public class StatsServiceTest {
     @Test
     void getStatsUnique() {
         Mockito
-                .when(statsRepository.countUniqueHits(date, date, Mockito.any()))
+                .when(statsRepository.countUniqueHits(date, date, null))
                 .thenReturn(1L);
 
         ViewStats stats = statsService.getStats(date, date, null, true);
