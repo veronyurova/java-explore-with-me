@@ -3,7 +3,6 @@ package ru.practicum.evm.main.service;
 import ru.practicum.evm.main.dto.ParticipationRequestDto;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface RequestService {
     List<ParticipationRequestDto> getUserRequests(Long userId);
