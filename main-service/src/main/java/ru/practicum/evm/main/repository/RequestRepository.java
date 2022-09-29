@@ -19,6 +19,9 @@ public interface RequestRepository extends JpaRepository<ParticipationRequest, L
 
     Optional<ParticipationRequest> findByRequesterAndEvent(Long userId, Long eventId);
 
+    Optional<ParticipationRequest> findByRequesterAndEventAndStatus(Long userId, Long eventId,
+                                                                    RequestStatus status);
+
     @Modifying
     @Transactional
     @Query("UPDATE ParticipationRequest AS pr " +

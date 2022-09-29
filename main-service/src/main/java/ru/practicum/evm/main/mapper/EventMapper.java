@@ -7,6 +7,7 @@ import ru.practicum.evm.main.client.StatsClient;
 import org.springframework.http.ResponseEntity;
 import ru.practicum.evm.main.model.*;
 import ru.practicum.evm.main.dto.*;
+import ru.practicum.evm.main.repository.ReviewRepository;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -16,12 +17,15 @@ import java.util.List;
 public class EventMapper {
     private final StatsClient statsClient;
     private final RequestRepository requestRepository;
+    private final ReviewRepository reviewRepository;
 
     @Autowired
     public EventMapper(StatsClient statsClient,
-                       RequestRepository requestRepository) {
+                       RequestRepository requestRepository,
+                       ReviewRepository reviewRepository) {
         this.statsClient = statsClient;
         this.requestRepository = requestRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     public Event toEventAdd(NewEventDto newEventDto) {
@@ -63,7 +67,8 @@ public class EventMapper {
                 event.getState().toString(),
                 event.getCreatedOn(),
                 event.getPublishedOn(),
-                getViews(event.getId())
+                getViews(event.getId()),
+                reviewRepository.countEventRating(event.getId())
         );
     }
 
@@ -77,7 +82,8 @@ public class EventMapper {
                 new CategoryDto(event.getCategory().getId(), event.getCategory().getName()),
                 new UserShortDto(event.getInitiator().getId(), event.getInitiator().getName()),
                 requestRepository.countByEventAndStatus(event.getId(), RequestStatus.CONFIRMED),
-                getViews(event.getId())
+                getViews(event.getId()),
+                reviewRepository.countEventRating(event.getId())
         );
     }
 
@@ -91,7 +97,8 @@ public class EventMapper {
                 event.getCategory(),
                 event.getInitiator(),
                 event.getConfirmedRequests(),
-                event.getViews()
+                event.getViews(),
+                event.getRating()
         );
     }
 

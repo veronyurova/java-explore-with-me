@@ -3,6 +3,7 @@ package ru.practicum.evm.main.service;
 import ru.practicum.evm.main.dto.ParticipationRequestDto;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RequestService {
     List<ParticipationRequestDto> getUserRequests(Long userId);
@@ -16,4 +17,6 @@ public interface RequestService {
     ParticipationRequestDto confirmRequest(Long userId, Long eventId, Long reqId);
 
     ParticipationRequestDto rejectRequest(Long userId, Long eventId, Long reqId);
+
+    boolean userParticipateInEvent(Long userId, Long eventId);
 }
