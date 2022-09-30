@@ -1,11 +1,9 @@
 package ru.practicum.evm.main.dto;
 
-import lombok.Getter;
-import lombok.EqualsAndHashCode;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
+@ToString
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor

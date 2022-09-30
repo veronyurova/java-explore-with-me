@@ -1,15 +1,15 @@
 package ru.practicum.evm.main.dto;
 
-import lombok.Getter;
-import lombok.EqualsAndHashCode;
-import lombok.AllArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Getter
+@ToString
 @EqualsAndHashCode
 @AllArgsConstructor
+@NoArgsConstructor
 public class NewReviewDto {
     @NotNull
     private Long event;
