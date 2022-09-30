@@ -1,7 +1,7 @@
 package ru.practicum.evm.main.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.practicum.evm.main.service.ReviewService;
 import ru.practicum.evm.main.dto.NewReviewDto;
 import ru.practicum.evm.main.dto.ReviewDto;
@@ -9,13 +9,9 @@ import ru.practicum.evm.main.dto.ReviewDto;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class ReviewController {
     private final ReviewService reviewService;
-
-    @Autowired
-    public ReviewController(ReviewService reviewService) {
-        this.reviewService = reviewService;
-    }
 
     @GetMapping("/events/{eventId}/reviews")
     public List<ReviewDto> getEventReviews(@PathVariable Long eventId,

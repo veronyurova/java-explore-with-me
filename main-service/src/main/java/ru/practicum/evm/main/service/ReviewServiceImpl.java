@@ -1,9 +1,9 @@
 package ru.practicum.evm.main.service;
 
 import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.evm.main.repository.ReviewRepository;
@@ -24,16 +24,10 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @Validated
+@RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final RequestService requestService;
-
-    @Autowired
-    public ReviewServiceImpl(ReviewRepository reviewRepository,
-                             RequestService requestService) {
-        this.reviewRepository = reviewRepository;
-        this.requestService = requestService;
-    }
 
     @Override
     public List<ReviewDto> getEventReviews(Long eventId, @Min(0) int from, @Min(1) int size) {
