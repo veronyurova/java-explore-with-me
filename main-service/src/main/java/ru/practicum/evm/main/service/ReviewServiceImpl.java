@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.evm.main.repository.ReviewRepository;
@@ -30,20 +32,22 @@ public class ReviewServiceImpl implements ReviewService {
     private final RequestService requestService;
 
     @Override
-    public List<ReviewDto> getEventReviews(Long eventId, @Min(0) int from, @Min(1) int size) {
+    public Page<ReviewDto> getEventReviews(Long eventId, @Min(0) int from, @Min(1) int size) {
         Pageable pageable = PageRequest.of(from / size, size);
-        return reviewRepository.findAllByEventAndStatus(eventId, ReviewStatus.PUBLISHED, pageable)
-                .stream()
+        List<ReviewDto> reviews = reviewRepository.findAllByEventAndStatus(eventId,
+                        ReviewStatus.PUBLISHED, pageable).stream()
                 .map(ReviewMapper::toReviewDto)
                 .collect(Collectors.toList());
+        return new PageImpl<>(reviews);
     }
 
     @Override
-    public List<ReviewDto> getUserReviews(Long userId) {
-        return reviewRepository.findAllByUser(userId)
-                .stream()
+    public Page<ReviewDto> getUserReviews(Long userId, @Min(0) int from, @Min(1) int size) {
+        Pageable pageable = PageRequest.of(from / size, size);
+        List<ReviewDto> reviews = reviewRepository.findAllByUser(userId, pageable).stream()
                 .map(ReviewMapper::toReviewDto)
                 .collect(Collectors.toList());
+        return new PageImpl<>(reviews);
     }
 
     @Override
@@ -52,17 +56,15 @@ public class ReviewServiceImpl implements ReviewService {
         Long eventId = review.getEvent();
         Optional<Review> reviewOptional = reviewRepository.findByUserAndEvent(userId, eventId);
         if (reviewOptional.isPresent()) {
-            String message = "User can only add one review per event.";
-            log.warn("ForbiddenOperationException at ReviewServiceImpl.addReview: {}", message);
-            throw new ForbiddenOperationException(message);
+            throw new ForbiddenOperationException("User can only add one review per event.");
         }
         if (!requestService.userParticipateInEvent(userId, eventId)) {
-            String message = "Users can only review events they participate in.";
-            log.warn("ForbiddenOperationException at ReviewServiceImpl.addReview: {}", message);
-            throw new ForbiddenOperationException(message);
+            throw new ForbiddenOperationException("Users can only review events they participate in.");
         }
         review.setUser(userId);
-        if (review.getReview() == null) review.setStatus(ReviewStatus.PUBLISHED);
+        if (review.getReview() == null) {
+            review.setStatus(ReviewStatus.PUBLISHED);
+        }
         Review addedReview = reviewRepository.save(review);
         log.info("ReviewServiceImpl.addReview: review {} successfully added", addedReview.getId());
         return ReviewMapper.toReviewDto(addedReview);
@@ -70,11 +72,9 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void deleteReviewById(Long userId, Long reviewId) {
-        Review review = findReviewById(reviewId);
+        Review review = getById(reviewId);
         if (!userId.equals(review.getUser())) {
-            String message = "Only author can delete review.";
-            log.warn("ForbiddenOperationException at ReviewServiceImpl.deleteReviewById: {}", message);
-            throw new ForbiddenOperationException(message);
+            throw new ForbiddenOperationException("Only author can delete review.");
         }
         reviewRepository.deleteById(reviewId);
         log.info("ReviewServiceImpl.deleteReviewById: review {} successfully deleted", reviewId);
@@ -82,11 +82,9 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void publishReview(Long reviewId) {
-        Review review = findReviewById(reviewId);
+        Review review = getById(reviewId);
         if (!ReviewStatus.PENDING.equals(review.getStatus())) {
-            String message = "Only pending reviews can be published.";
-            log.warn("ForbiddenOperationException at ReviewServiceImpl.publishReview: {}", message);
-            throw new ForbiddenOperationException(message);
+            throw new ForbiddenOperationException("Only pending reviews can be published.");
         }
         review.setStatus(ReviewStatus.PUBLISHED);
         reviewRepository.save(review);
@@ -95,22 +93,19 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void rejectReview(Long reviewId) {
-        Review review = findReviewById(reviewId);
+        Review review = getById(reviewId);
         if (!ReviewStatus.PENDING.equals(review.getStatus())) {
-            String message = "Only pending reviews can be rejected.";
-            log.warn("ForbiddenOperationException at ReviewServiceImpl.rejectReview: {}", message);
-            throw new ForbiddenOperationException(message);
+            throw new ForbiddenOperationException("Only pending reviews can be rejected.");
         }
         review.setStatus(ReviewStatus.REJECTED);
         reviewRepository.save(review);
         log.info("ReviewServiceImpl.rejectEvent: review {} successfully rejected", review.getId());
     }
 
-    private Review findReviewById(Long reviewId) {
-        Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
+    private Review getById(Long id) {
+        Optional<Review> reviewOptional = reviewRepository.findById(id);
         if (reviewOptional.isEmpty()) {
-            String message = String.format("Review with id=%d was not found.", reviewId);
-            log.warn("EntityNotFoundException at ReviewServiceImpl: {}", message);
+            String message = String.format("Review with id=%d was not found.", id);
             throw new EntityNotFoundException(message);
         }
         return reviewOptional.get();

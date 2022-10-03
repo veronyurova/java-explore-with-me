@@ -1,6 +1,10 @@
 package ru.practicum.evm.main.dto;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
 @ToString

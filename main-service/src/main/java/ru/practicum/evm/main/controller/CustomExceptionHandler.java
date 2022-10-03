@@ -50,6 +50,7 @@ public class CustomExceptionHandler {
     @ResponseBody
     public ApiError handleForbiddenOperationException(ForbiddenOperationException e) {
         String status = String.valueOf(HttpStatus.FORBIDDEN);
+        log.warn("ForbiddenOperationException: {}", e.getMessage());
         return new ApiError(null, REASON, e.getMessage(), status, LocalDateTime.now());
     }
 
@@ -59,6 +60,7 @@ public class CustomExceptionHandler {
     public ApiError handleEntityNotFoundException(EntityNotFoundException e) {
         String reason = "The required object was not found.";
         String status = String.valueOf(HttpStatus.NOT_FOUND);
+        log.warn("EntityNotFoundException: {}", e.getMessage());
         return new ApiError(null, reason, e.getMessage(), status, LocalDateTime.now());
     }
 

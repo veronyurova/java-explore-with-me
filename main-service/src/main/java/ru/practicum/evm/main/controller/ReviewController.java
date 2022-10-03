@@ -1,12 +1,11 @@
 package ru.practicum.evm.main.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.evm.main.service.ReviewService;
 import ru.practicum.evm.main.dto.NewReviewDto;
 import ru.practicum.evm.main.dto.ReviewDto;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -14,15 +13,17 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @GetMapping("/events/{eventId}/reviews")
-    public List<ReviewDto> getEventReviews(@PathVariable Long eventId,
+    public Page<ReviewDto> getEventReviews(@PathVariable Long eventId,
                                            @RequestParam(defaultValue = "0") int from,
                                            @RequestParam(defaultValue = "10") int size) {
         return reviewService.getEventReviews(eventId, from, size);
     }
 
     @GetMapping("/users/{userId}/reviews")
-    public List<ReviewDto> getUserReviews(@PathVariable Long userId) {
-        return reviewService.getUserReviews(userId);
+    public Page<ReviewDto> getUserReviews(@PathVariable Long userId,
+                                          @RequestParam(defaultValue = "0") int from,
+                                          @RequestParam(defaultValue = "10") int size) {
+        return reviewService.getUserReviews(userId, from, size);
     }
 
     @PostMapping("/users/{userId}/reviews")
