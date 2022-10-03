@@ -66,7 +66,8 @@ public class EventServiceTest {
             categoryDto,
             userDto,
             0,
-            0L
+            0L,
+            1.0F
     );
     private final EventFullDto eventFullDto = new EventFullDto(
             1L,
@@ -84,7 +85,8 @@ public class EventServiceTest {
             "PUBLISHED",
             date,
             date,
-            0L
+            0L,
+            1.0F
     );
 
     @BeforeEach
@@ -308,7 +310,8 @@ public class EventServiceTest {
                 "PENDING",
                 date,
                 date,
-                0L
+                0L,
+                1.0F
         );
         Mockito.when(eventRepository.findById(1L)).thenReturn(Optional.of(oldEvent));
         Mockito.when(eventRepository.save(updateEvent)).thenReturn(updateEvent);
@@ -402,7 +405,8 @@ public class EventServiceTest {
                 "PUBLISHED",
                 date,
                 date,
-                0L
+                0L,
+                1.0F
         );
         Mockito.when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
         Mockito.when(eventRepository.save(updateEvent)).thenReturn(updateEvent);
@@ -464,7 +468,8 @@ public class EventServiceTest {
                 "CANCELED",
                 date,
                 date,
-                0L
+                0L,
+                1.0F
         );
         Mockito.when(eventRepository.findById(1L)).thenReturn(Optional.of(oldEvent));
         Mockito.when(eventRepository.save(cancelEvent)).thenReturn(cancelEvent);
@@ -540,7 +545,8 @@ public class EventServiceTest {
                 "PUBLISHED",
                 date,
                 date,
-                0L
+                0L,
+                1.0F
         );
         Mockito.when(eventRepository.findById(1L)).thenReturn(Optional.of(oldEvent));
         Mockito.when(eventRepository.save(publishEvent)).thenReturn(publishEvent);
@@ -632,7 +638,8 @@ public class EventServiceTest {
                 "CANCELED",
                 date,
                 date,
-                0L
+                0L,
+                1.0F
         );
         Mockito.when(eventRepository.findById(1L)).thenReturn(Optional.of(oldEvent));
         Mockito.when(eventRepository.save(rejectEvent)).thenReturn(rejectEvent);
