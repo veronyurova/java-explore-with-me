@@ -103,7 +103,8 @@ public class RequestServiceTest {
                 "PUBLISHED",
                 null,
                 null,
-                0L
+                0L,
+                1.0F
         );
         ParticipationRequest savedRequest = new ParticipationRequest(1L, 1L, 1L,
                 date, RequestStatus.CONFIRMED);
@@ -138,7 +139,8 @@ public class RequestServiceTest {
                 "PUBLISHED",
                 null,
                 null,
-                0L
+                0L,
+                1.0F
         );
         Mockito.when(eventService.getEventById(1L)).thenReturn(event);
         Mockito.when(requestRepository.findByRequesterAndEvent(1L, 1L)).thenReturn(Optional.of(request));
@@ -165,7 +167,8 @@ public class RequestServiceTest {
                 "PUBLISHED",
                 null,
                 null,
-                0L
+                0L,
+                1.0F
         );
         Mockito.when(eventService.getEventById(1L)).thenReturn(event);
         Mockito.when(requestRepository.findByRequesterAndEvent(1L, 1L)).thenReturn(Optional.empty());
@@ -192,7 +195,8 @@ public class RequestServiceTest {
                 "PENDING",
                 null,
                 null,
-                0L
+                0L,
+                1.0F
         );
         Mockito.when(eventService.getEventById(1L)).thenReturn(event);
         Mockito.when(requestRepository.findByRequesterAndEvent(1L, 1L)).thenReturn(Optional.empty());
@@ -219,7 +223,8 @@ public class RequestServiceTest {
                 "PUBLISHED",
                 null,
                 null,
-                0L
+                0L,
+                1.0F
         );
         Mockito.when(eventService.getEventById(1L)).thenReturn(event);
         Mockito.when(requestRepository.findByRequesterAndEvent(1L, 1L)).thenReturn(Optional.empty());
@@ -275,7 +280,8 @@ public class RequestServiceTest {
                 "PUBLISHED",
                 null,
                 null,
-                0L
+                0L,
+                1.0F
         );
         ParticipationRequest savedRequest = new ParticipationRequest(1L, 1L, 1L,
                 date, RequestStatus.CONFIRMED);
@@ -310,7 +316,8 @@ public class RequestServiceTest {
                 "PUBLISHED",
                 null,
                 null,
-                0L
+                0L,
+                1.0F
         );
         Mockito.when(eventService.getUserEventById(2L, 1L)).thenReturn(event);
 

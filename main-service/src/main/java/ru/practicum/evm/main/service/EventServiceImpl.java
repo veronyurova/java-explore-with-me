@@ -81,6 +81,11 @@ public class EventServiceImpl implements EventService {
                             .sorted(Comparator.comparingLong(EventFullDto::getViews))
                             .collect(Collectors.toList());
                     break;
+                case RATING:
+                    events = events
+                            .stream()
+                            .sorted(Comparator.comparingDouble(EventFullDto::getRating))
+                            .collect(Collectors.toList());
             }
         }
         return events

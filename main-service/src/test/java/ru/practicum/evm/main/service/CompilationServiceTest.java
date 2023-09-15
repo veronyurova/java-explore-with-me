@@ -42,7 +42,8 @@ public class CompilationServiceTest {
             null,
             null,
             0,
-            0L
+            0L,
+            1.0F
     );
     private final Compilation compilation = new Compilation(1L, "Title", true);
     private final CompilationDto compilationDto = new CompilationDto(1L, "Title", true, List.of(event));

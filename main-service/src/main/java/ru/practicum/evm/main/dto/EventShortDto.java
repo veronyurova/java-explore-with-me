@@ -23,4 +23,5 @@ public class EventShortDto {
     private UserShortDto initiator;
     private Integer confirmedRequests;
     private Long views;
+    private Float rating;
 }
